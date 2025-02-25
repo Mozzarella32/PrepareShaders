@@ -1,11 +1,10 @@
 #include <filesystem>
 #include <string>
 #include <fstream>
-
 #include <algorithm>
 #include <unordered_set>
 #include <map>
-
+#include <vector>
 #include <iostream>
 
 const std::filesystem::path HashPath = ".hash";
