@@ -14,5 +14,5 @@ add_executable(${CMAKE_PROJECT_NAME} main.cpp)
 add_custom_command(
     TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${PROJECT_SOURCE_DIR}/
-    COMMENT "Kopiere Executable in das Projektverzeichnis"
+    COMMENT "Copy executable to project dir"
 )
