@@ -104,12 +104,12 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	std::cout << "Writing Shader_X_List.h\n";
+	std::cout << "Writing Shader_X_List.hpp\n";
 
 	std::stringstream Ss;
 	Ss << R"----(#pragma once
 
-#include "pch.h"
+#include "pch.hpp"
 
 #define XList_Shaders_Names \
 )----";
@@ -132,12 +132,12 @@ int main(int argc, char* argv[]) {
 	std::string NewShaderXLists = Ss.str();
 
 	Ss = std::stringstream();
-	if (std::filesystem::exists("Shader_X_List.h")) {
-		std::ifstream I("Shader_X_List.h");
+	if (std::filesystem::exists("Shader_X_List.hpp")) {
+		std::ifstream I("Shader_X_List.hpp");
 		Ss << I.rdbuf();
 		std::string OldShaderXLists = Ss.str();
 		if (NewShaderXLists != OldShaderXLists) {
-			std::ofstream O("Shader_X_List.h");
+			std::ofstream O("Shader_X_List.hpp");
 			O << NewShaderXLists;
 			std::cout << "Old Shader X Lists =\n\""
 				<< OldShaderXLists << "\"\n"
@@ -147,15 +147,15 @@ int main(int argc, char* argv[]) {
 		Ss = std::stringstream();
 	}
 	else {
-		std::ofstream O("Shader_X_List.h");
+		std::ofstream O("Shader_X_List.hpp");
 		O << NewShaderXLists;
 	}
 	
-	std::cout << "Writing Shader_Includes.h\n";
+	std::cout << "Writing Shader_Includes.hpp\n";
 
 	Ss << R"---(#pragma once
 
-#include "pch.h"
+#include "pch.hpp"
 
 )---";
 
@@ -170,12 +170,12 @@ int main(int argc, char* argv[]) {
 	std::string NewShaderIncludes = Ss.str();
 
 	Ss = std::stringstream();
-	if (std::filesystem::exists("Shader_Includes.h")) {
-		std::ifstream I("Shader_Includes.h");
+	if (std::filesystem::exists("Shader_Includes.hpp")) {
+		std::ifstream I("Shader_Includes.hpp");
 		Ss << I.rdbuf();
 		std::string OldShaderIncludes = Ss.str();
 		if (NewShaderIncludes != OldShaderIncludes) {
-			std::ofstream O("Shader_Includes.h");
+			std::ofstream O("Shader_Includes.hpp");
 			O << NewShaderIncludes;
 			std::cout << "Old Shader Includes =\n\""
 				<< OldShaderIncludes << "\"\n"
@@ -185,7 +185,7 @@ int main(int argc, char* argv[]) {
 		Ss = std::stringstream();
 	}
 	else {
-		std::ofstream O("Shader_Includes.h");
+		std::ofstream O("Shader_Includes.hpp");
 		O << NewShaderIncludes;
 	}
 
