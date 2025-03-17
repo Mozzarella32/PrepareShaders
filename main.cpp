@@ -21,7 +21,7 @@ bool HasChanged() {
 		}
 	}
 
-	std::cout << "Last Hash:    " << OldHash << "\n";
+	std::cout << "Last Hash:    " << OldHash << " read from " << std::filesystem::absolute(HashPath) << "\n";
 
 	std::cout << "Current Hash: ";
 
