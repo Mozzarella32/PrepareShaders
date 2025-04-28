@@ -128,6 +128,8 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
+	Ss << "\n";
+
 	std::string NewShaderXLists = Ss.str();
 
 	Ss = std::stringstream();
