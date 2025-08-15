@@ -43,7 +43,7 @@ bool HasChanged() {
   return OldHash != Hash;
 }
 
-int main(int argc, char *argv[]) {
+int main([[maybe_unused]]int argc, char *argv[]) {
   std::filesystem::current_path(std::filesystem::path(argv[0]).parent_path());
 
   std::cout << "ShadersToCharArray:\n";
