@@ -12,9 +12,3 @@ else()
 endif()
 
 add_executable(${PROJECT_NAME} main.cpp)
-
-add_custom_command(
-    TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:ShadersToCharArray> ${CMAKE_SOURCE_DIR}/resources/shaders
-    COMMENT "Copy ShadersToCharArray to shaders"
-)

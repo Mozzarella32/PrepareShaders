@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+#include <format>
 
 const std::filesystem::path HashPath = ".hash";
 
@@ -44,7 +45,20 @@ bool HasChanged() {
 }
 
 int main([[maybe_unused]]int argc, char *argv[]) {
-  std::filesystem::current_path(std::filesystem::path(argv[0]).parent_path());
+
+  if(argc != 2){
+    std::cout << std::format("Usage: {} direcotry\n", argv[0]);
+    exit(-1);
+  }
+
+  const auto path = std::filesystem::path(argv[1]);
+
+  if(!std::filesystem::is_directory(path)) {
+    std::cout << std::format("{} is not a directory\n", path.string());
+    exit(-1);
+  }
+
+  std::filesystem::current_path(path);
 
   std::cout << "ShadersToCharArray:\n";
 
