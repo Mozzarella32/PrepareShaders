@@ -2,11 +2,11 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <set>
 #include <map>
 #include <sstream>
 #include <string>
 #include <unordered_set>
-#include <unordered_map>
 #include <vector>
 #include <format>
 
@@ -68,9 +68,9 @@ int main([[maybe_unused]]int argc, char *argv[]) {
     return 0;
   }
 
-  std::unordered_set<std::string> Verts;
-  std::unordered_set<std::string> Geoms;
-  std::unordered_set<std::string> Frags;
+  std::set<std::string> Verts;
+  std::set<std::string> Geoms;
+  std::set<std::string> Frags;
 
   std::cout << "Copyed Files: ";
 
@@ -116,7 +116,7 @@ int main([[maybe_unused]]int argc, char *argv[]) {
 
   std::cout << "Creating Mapping\n";
 
-  std::unordered_map<std::string, std::vector<std::string>> VertsToFrags;
+  std::map<std::string, std::vector<std::string>> VertsToFrags;
   for (const auto &v : Verts) {
     for (auto f = begin(Frags); f != end(Frags);) {
       f = std::find_if(f, end(Frags), [&v](const std::string &elem) {
@@ -129,7 +129,7 @@ int main([[maybe_unused]]int argc, char *argv[]) {
     }
   }
 
-  std::unordered_map<std::string, std::vector<std::string>> VertsToGeoms;
+  std::map<std::string, std::vector<std::string>> VertsToGeoms;
   for (const auto &v : Verts) {
     for (auto g = begin(Geoms); g != end(Geoms);) {
       g = std::find_if(g, end(Geoms), [&v](const std::string &elem) {
