@@ -233,6 +233,26 @@ int main([[maybe_unused]]int argc, char *argv[]) {
        << "\n";
   }
 
+  
+  for (const auto& vert : Verts) {
+      Ss << "#include \"CharArrays/" << vert << "_vert\"\n";
+      auto geomIt = VertsToGeoms.find(vert);
+      if (geomIt != VertsToGeoms.end() && !geomIt->second.empty()) {
+          for (const auto& geom : geomIt->second) {
+          Ss << "#include \"CharArrays/" << geom << "_geom\"\n";
+              for (const auto& frag : VertsToFrags[vert]) {
+                  if (frag.starts_with(geom)) {
+                    Ss << "#include \"CharArrays/" << frag << "_frag\"\n";
+                  }
+              }
+          }
+      } else {
+          for (const auto& frag : VertsToFrags[vert]) {
+               Ss << "#include \"CharArrays/" << frag << "_frag\"\n";
+          }
+      }
+      Ss << "\n";
+  }
   std::string NewShaderIncludes = Ss.str();
 
   Ss = std::stringstream();
