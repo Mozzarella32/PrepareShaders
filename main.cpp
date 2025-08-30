@@ -220,20 +220,6 @@ int main([[maybe_unused]]int argc, char *argv[]) {
 
 )---";
 
-  for (const auto& [vert, frag] : vertFrag) {
-    Ss << "#include \"CharArrays/" << vert << "_vert\"\n"
-       << "#include \"CharArrays/" << frag << "_frag\"\n"
-       << "\n";
-  }
-
-  for (const auto& [vert, geom, frag] : vertGeomFrag) {
-    Ss << "#include \"CharArrays/" << vert << "_vert\"\n"
-       << "#include \"CharArrays/" << geom << "_geom\"\n"
-       << "#include \"CharArrays/" << frag << "_frag\"\n"
-       << "\n";
-  }
-
-  
   for (const auto& vert : Verts) {
       Ss << "#include \"CharArrays/" << vert << "_vert\"\n";
       auto geomIt = VertsToGeoms.find(vert);
