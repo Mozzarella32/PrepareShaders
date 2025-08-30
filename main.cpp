@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
 #include <vector>
 #include <format>
 
@@ -68,6 +69,7 @@ int main([[maybe_unused]]int argc, char *argv[]) {
   }
 
   std::unordered_set<std::string> Verts;
+  std::unordered_set<std::string> Geoms;
   std::unordered_set<std::string> Frags;
 
   std::cout << "Copyed Files: ";
@@ -96,20 +98,25 @@ int main([[maybe_unused]]int argc, char *argv[]) {
       FileContent << ")---\";";
       std::ofstream of(std::filesystem::path("CharArrays") / Name);
       of << FileContent.str();
+
       if (Extention == "vert") {
         Verts.emplace(de.path().stem().string());
       }
-      if (Extention == "frag") {
+      else if (Extention == "geom") {
+        Geoms.emplace(de.path().stem().string());
+      }
+      else if (Extention == "frag") {
         Frags.emplace(de.path().stem().string());
       }
     }
   }
 
-  std::cout << Verts.size() << " .verts & " << Frags.size() << " .frags\n";
+  std::cout << Verts.size() << " .verts & " << Geoms.size() << " .geoms &"
+            << Frags.size() << " .frags\n";
 
   std::cout << "Creating Mapping\n";
-  std::map<std::string, std::vector<std::string>> VertsToFrags;
 
+  std::unordered_map<std::string, std::vector<std::string>> VertsToFrags;
   for (const auto &v : Verts) {
     for (auto f = begin(Frags); f != end(Frags);) {
       f = std::find_if(f, end(Frags), [&v](const std::string &elem) {
@@ -122,9 +129,40 @@ int main([[maybe_unused]]int argc, char *argv[]) {
     }
   }
 
+  std::unordered_map<std::string, std::vector<std::string>> VertsToGeoms;
+  for (const auto &v : Verts) {
+    for (auto g = begin(Geoms); g != end(Geoms);) {
+      g = std::find_if(g, end(Geoms), [&v](const std::string &elem) {
+        return elem.starts_with(v);
+      });
+      if (g != end(Geoms)) {
+        VertsToGeoms[v].push_back(*g);
+        g++;
+      }
+    }
+  }
+
+  std::vector<std::tuple<std::string, std::string, std::string>> vertGeomFrag;
+  std::vector<std::pair<std::string, std::string>> vertFrag;
+  for (const auto& [vert, frags] : VertsToFrags) {
+    auto geomIt = VertsToGeoms.find(vert);
+    if (geomIt != VertsToGeoms.end() && !geomIt->second.empty()) {
+      for (const auto& geom : geomIt->second) {
+        for (const auto& frag : frags) {
+          vertGeomFrag.emplace_back(vert, geom, frag);
+        }
+      }
+    } else {
+      for (const auto& frag : frags) {
+        vertFrag.emplace_back(vert, frag);
+      }
+    }
+  }
+
   std::cout << "Writing Shader_X_List.hpp\n";
 
   std::stringstream Ss;
+
   Ss << R"----(#pragma once
 
 #include "pch.hpp"
@@ -132,19 +170,25 @@ int main([[maybe_unused]]int argc, char *argv[]) {
 #define XList_Shaders_Names \
 )----";
 
-  for (const auto &Vert : VertsToFrags) {
-    for (const auto &Frag : Vert.second) {
-      Ss << "X(" << Frag << ")\\\n";
-    }
+  for (const auto& tuple : vertFrag) {
+    Ss << "X(" << std::get<1>(tuple) << ")\\\n";
   }
-  Ss << R"---(
-#define XList_Shaders_Combined \
-)---";
+  for (const auto& tuple : vertGeomFrag) {
+    Ss << "X(" << std::get<2>(tuple) << ")\\\n";
+  }
 
-  for (const auto &Vert : VertsToFrags) {
-    for (const auto &Frag : Vert.second) {
-      Ss << "X(" << Vert.first << ", " << Frag << ")\\\n";
-    }
+  Ss << R"---(
+#define XList_Shaders_VertFrag \
+)---";
+  for (const auto& [vert, frag]: vertFrag) {
+    Ss << "X(" << vert << ", " << frag << ")\\\n";
+  }
+
+  Ss << R"---(
+#define XList_Shaders_VertGeomFrag \
+)---";
+  for (const auto& [vert, geom, frag] : vertGeomFrag) {
+    Ss << "X(" << vert << ", " << geom << ", " << frag << ")\\\n";
   }
 
   Ss << "\n";
@@ -176,12 +220,17 @@ int main([[maybe_unused]]int argc, char *argv[]) {
 
 )---";
 
-  for (const auto &Vert : VertsToFrags) {
-    Ss << "#include \"CharArrays/" + Vert.first + "_vert\"\n";
-    for (const auto &Frag : Vert.second) {
-      Ss << "#include \"CharArrays/" + Frag + "_frag\"\n";
-    }
-    Ss << "\n";
+  for (const auto& [vert, frag] : vertFrag) {
+    Ss << "#include \"CharArrays/" << vert << "_vert\"\n"
+       << "#include \"CharArrays/" << frag << "_frag\"\n"
+       << "\n";
+  }
+
+  for (const auto& [vert, geom, frag] : vertGeomFrag) {
+    Ss << "#include \"CharArrays/" << vert << "_vert\"\n"
+       << "#include \"CharArrays/" << geom << "_geom\"\n"
+       << "#include \"CharArrays/" << frag << "_frag\"\n"
+       << "\n";
   }
 
   std::string NewShaderIncludes = Ss.str();
