@@ -111,7 +111,7 @@ int main([[maybe_unused]]int argc, char *argv[]) {
     }
   }
 
-  std::cout << Verts.size() << " .verts & " << Geoms.size() << " .geoms &"
+  std::cout << Verts.size() << " .verts & " << Geoms.size() << " .geoms & "
             << Frags.size() << " .frags\n";
 
   std::cout << "Creating Mapping\n";
