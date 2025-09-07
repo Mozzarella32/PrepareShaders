@@ -74,40 +74,64 @@ int main([[maybe_unused]]int argc, char *argv[]) {
 
   std::cout << "Copyed Files: ";
 
-  std::filesystem::remove_all("CharArrays");
-  std::filesystem::create_directories("CharArrays");
+  std::filesystem::remove_all("ShaderHeaders");
+  std::filesystem::create_directories("ShaderHeaders");
 
   for (const auto &de :
        std::filesystem::directory_iterator(std::filesystem::path("Source"))) {
-    if (de.is_regular_file()) {
+    if (!de.is_regular_file()) continue;
 
-      std::stringstream FileContent;
-      FileContent << "static const char * ";
-      auto Extention = de.path().extension().string();
-      if (Extention.empty()) {
-        continue;
-      }
-      Extention = Extention.substr(1, Extention.length() - 1);
-      auto Name = de.path().stem().string() + "_" + Extention;
-      FileContent << Name;
-      FileContent << " = R\"---(";
-      std::ifstream in(de.path());
-      if (in) {
-        FileContent << in.rdbuf();
-      }
-      FileContent << ")---\";";
-      std::ofstream of(std::filesystem::path("CharArrays") / Name);
-      of << FileContent.str();
+    auto Extention = de.path().extension().string();
+    if (Extention.empty()) {
+      continue;
+    }
+    Extention = Extention.substr(1, Extention.length() - 1);
+    auto Name = de.path().stem().string() + "_" + Extention;
 
-      if (Extention == "vert") {
-        Verts.emplace(de.path().stem().string());
+    std::filesystem::path Destination("ShaderHeaders");
+    Destination /= Name + ".hpp";
+
+    std::filesystem::path Source("Source");
+    Source /= de.path().filename();
+
+    std::ifstream i(Source, std::ios_base::binary);
+    std::ofstream o(Destination);
+
+    std::string CoreName = de.path().filename().stem().string();
+
+    o << "static const unsigned char " << Name << "[] = {\n";
+
+    char byte;
+
+    int j = 0;
+
+    if (i.get(byte)) {
+      o << "\t0x" << std::setw(2) << std::setfill('0') << std::hex
+        << (0xFF & byte);
+      ++j;
+      while (i.get(byte)) {
+        o << ", ";
+        if (j++ % 16 == 0) {
+          o << "\n\t";
+        }
+        o << "0x" << std::setw(2) << std::setfill('0') << std::hex
+          << (0xFF & byte);
       }
-      else if (Extention == "geom") {
-        Geoms.emplace(de.path().stem().string());
-      }
-      else if (Extention == "frag") {
-        Frags.emplace(de.path().stem().string());
-      }
+    }
+
+    o << std::dec;
+    o << "\n};\n\n";
+    // o << "static const size_t Source_" << CoreName << "_png_len = " << j
+    //   << ";\n";
+
+    if (Extention == "vert") {
+      Verts.emplace(de.path().stem().string());
+    }
+    else if (Extention == "geom") {
+      Geoms.emplace(de.path().stem().string());
+    }
+    else if (Extention == "frag") {
+      Frags.emplace(de.path().stem().string());
     }
   }
 
