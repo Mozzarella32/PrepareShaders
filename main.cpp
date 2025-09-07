@@ -128,8 +128,8 @@ int main([[maybe_unused]]int argc, char *argv[]) {
 
     o << std::dec;
     o << "\n};\n\n";
-    // o << "static const size_t Source_" << CoreName << "_png_len = " << j
-    //   << ";\n";
+    o << "static const size_t " << Name << "_len = " << j
+      << ";\n";
 
     if (Extention == "vert") {
       Verts.emplace(de.path().stem().string());
