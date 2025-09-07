@@ -252,20 +252,20 @@ int main([[maybe_unused]]int argc, char *argv[]) {
 )---";
 
   for (const auto& vert : Verts) {
-      Ss << "#include \"ShaderHeaders/" << vert << "_vert\"\n";
+      Ss << "#include \"ShaderHeaders/" << vert << "_vert.hpp\"\n";
       auto geomIt = VertsToGeoms.find(vert);
       if (geomIt != VertsToGeoms.end() && !geomIt->second.empty()) {
           for (const auto& geom : geomIt->second) {
-          Ss << "#include \"ShaderHeaders/" << geom << "_geom\"\n";
+          Ss << "#include \"ShaderHeaders/" << geom << "_geom.hpp\"\n";
               for (const auto& frag : VertsToFrags[vert]) {
                   if (frag.starts_with(geom)) {
-                    Ss << "#include \"ShaderHeaders/" << frag << "_frag\"\n";
+                    Ss << "#include \"ShaderHeaders/" << frag << "_frag.hpp\"\n";
                   }
               }
           }
       } else {
           for (const auto& frag : VertsToFrags[vert]) {
-               Ss << "#include \"ShaderHeaders/" << frag << "_frag\"\n";
+               Ss << "#include \"ShaderHeaders/" << frag << "_frag.hpp\"\n";
           }
       }
       Ss << "\n";
