@@ -61,7 +61,7 @@ int main([[maybe_unused]]int argc, char *argv[]) {
 
   std::filesystem::current_path(path);
 
-  std::cout << "ShadersToCharArray:\n";
+  std::cout << "PreprocessShaders:\n";
 
   if (!HasChanged()) {
     std::cout << "All Up To Date\n";
@@ -117,6 +117,13 @@ int main([[maybe_unused]]int argc, char *argv[]) {
         o << "0x" << std::setw(2) << std::setfill('0') << std::hex
           << (0xFF & byte);
       }
+      //Write null byte
+      o << ", ";
+      if (j++ % 16 == 0) {
+        o << "\n\t";
+      }
+      o << "0x" << std::setw(2) << std::setfill('0') << std::hex
+        << (0xFF & 0);
     }
 
     o << std::dec;
@@ -245,20 +252,20 @@ int main([[maybe_unused]]int argc, char *argv[]) {
 )---";
 
   for (const auto& vert : Verts) {
-      Ss << "#include \"CharArrays/" << vert << "_vert\"\n";
+      Ss << "#include \"ShaderHeaders/" << vert << "_vert\"\n";
       auto geomIt = VertsToGeoms.find(vert);
       if (geomIt != VertsToGeoms.end() && !geomIt->second.empty()) {
           for (const auto& geom : geomIt->second) {
-          Ss << "#include \"CharArrays/" << geom << "_geom\"\n";
+          Ss << "#include \"ShaderHeaders/" << geom << "_geom\"\n";
               for (const auto& frag : VertsToFrags[vert]) {
                   if (frag.starts_with(geom)) {
-                    Ss << "#include \"CharArrays/" << frag << "_frag\"\n";
+                    Ss << "#include \"ShaderHeaders/" << frag << "_frag\"\n";
                   }
               }
           }
       } else {
           for (const auto& frag : VertsToFrags[vert]) {
-               Ss << "#include \"CharArrays/" << frag << "_frag\"\n";
+               Ss << "#include \"ShaderHeaders/" << frag << "_frag\"\n";
           }
       }
       Ss << "\n";
