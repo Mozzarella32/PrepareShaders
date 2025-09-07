@@ -99,7 +99,7 @@ int main([[maybe_unused]]int argc, char *argv[]) {
 
     std::string CoreName = de.path().filename().stem().string();
 
-    o << "static const unsigned char " << Name << "[] = {\n";
+    o << "static const char " << Name << "[] = {\n";
 
     char byte;
 
